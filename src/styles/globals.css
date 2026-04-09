@@ -1,0 +1,89 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-cream: #FDFCF8;
+  --color-brand-ink: #1A1C1A;
+  --color-brand-moss: #4A5D4E;
+  --color-brand-sage: #8FA18F;
+  --color-brand-lichen: #C2CDBE;
+  --color-brand-mist: #E8EBE4;
+
+  --radius-3xl: 24px;
+  --radius-4xl: 32px;
+
+  --font-serif: "Gambarino", serif;
+  --font-sans: "Cabinet Grotesk", sans-serif;
+  --font-accent: "var(--font-accent)", "Indie Flower", cursive;
+}
+
+@font-face {
+  font-family: 'Gambarino';
+  src: url('/fonts/gambarino/Gambarino-Regular.woff2') format('woff2'),
+    url('/fonts/gambarino/Gambarino-Regular.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Cabinet Grotesk';
+  src: url('/fonts/cabinetgortesk/web/CabinetGrotesk-Variable.woff2') format('woff2'),
+    url('/fonts/cabinetgortesk/web/CabinetGrotesk-Variable.woff') format('woff'),
+    url('/fonts/cabinetgortesk/web/CabinetGrotesk-Variable.ttf') format('truetype');
+  font-weight: 100 900;
+  font-display: swap;
+  font-style: normal;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-brand-cream text-brand-ink font-serif antialiased;
+    text-rendering: optimizeLegibility;
+    font-size: 1.125rem;
+    letter-spacing: 0.015em;
+    line-height: 1.5;
+  }
+}
+
+@keyframes breathing {
+
+  0%,
+  100% {
+    opacity: 0.98;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.001);
+  }
+}
+
+.animate-breathing {
+  animation: breathing 6s ease-in-out infinite;
+}
+
+.polymath-glow {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background: radial-gradient(circle at 0% 50%, rgba(74, 93, 78, 0.08) 0%, transparent 40%),
+              radial-gradient(circle at 100% 50%, rgba(249, 115, 22, 0.05) 0%, transparent 40%);
+}
+
+.highlighter {
+  background: linear-gradient(120deg, rgba(249, 115, 22, 0.2) 0%, rgba(249, 115, 22, 0.1) 100%);
+  padding: 0 0.25em;
+  border-radius: 0.2em;
+}
+
+@layer utilities {
+  .font-accent {
+    font-family: var(--font-accent);
+  }
+}
