@@ -20,8 +20,8 @@ function isProtectedRoute(pathname: string): boolean {
 
 function hasSupabaseSession(request: NextRequest): boolean {
     const allCookies = request.cookies.getAll();
-    const sessionId = allCookies.some(c => 
-        c.name.includes('-auth-token') || 
+    const sessionId = allCookies.some(c =>
+        c.name.includes('-auth-token') ||
         c.name.includes('supabase-auth') ||
         c.name === 'sb-access-token'
     );
