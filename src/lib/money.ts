@@ -10,6 +10,21 @@ export interface Money {
     currency: CurrencyCode;
 }
 
+/**
+ * Detects explicitly mentioned currency in a string
+ */
+export function detectCurrencyFromInput(input: string): CurrencyCode | null {
+    const lower = input.toLowerCase();
+    
+    if (lower.includes("peso") || lower.includes("php") || lower.includes("₱")) return "PHP";
+    if (lower.includes("dollar") || lower.includes("usd") || lower.includes("buck") || lower.includes("$")) return "USD";
+    if (lower.includes("euro") || lower.includes("eur") || lower.includes("€")) return "EUR";
+    if (lower.includes("rupee") || lower.includes("inr") || lower.includes("rs") || lower.includes("₹")) return "INR";
+    
+    return null;
+}
+
+
 // ============================================================================
 // PURE FUNCTIONS (Currency-Safe)
 // ============================================================================

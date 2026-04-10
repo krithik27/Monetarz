@@ -1,4 +1,4 @@
-import { CurrencyCode, Money, MoneyEngine } from "./money";
+import { CurrencyCode, Money, MoneyEngine, detectCurrencyFromInput } from "./money";
 import { ParseResult } from "./types";
 
 export type { SpendCategory } from "./types";
@@ -40,8 +40,8 @@ export const isInflow = (spend: { category: string }): boolean => {
 
 // ... existing code ...
 
-// Regex constants for predictability
-const AMOUNT_REGEX = /[₹]?\s*([\d,]+(\.\d+)?)(k)?/i;
+// Regex constants for predictability (supporting multiple symbols)
+const AMOUNT_REGEX = /[₹$€₱]?\s*([\d,]+(\.\d+)?)(k)?/i;
 
 // Weighted keywords for deterministic scoring
 const KEYWORD_WEIGHTS: Record<string, { category: SpendCategory; weight: number }> = {
@@ -324,9 +324,13 @@ function cleanDescription(original: string, amountRaw: string, dateRaw: string):
  * Main parser function.
  * Deterministically extracts spend details.
  */
-export function parseSpend(input: string, currency: CurrencyCode = "INR"): ParsedSpend {
+export function parseSpend(input: string, baseCurrency: CurrencyCode = "INR"): ParsedSpend {
     let confidence = 1.0;
     const reviewReasons: string[] = [];
+
+    // Override currency if explicitly mentioned in text
+    const explicitCurrency = detectCurrencyFromInput(input);
+    const currency = explicitCurrency || baseCurrency;
 
     // 1. Extract Amount
     const { amount: rawAmount, raw: amountRaw } = extractAmount(input);
@@ -356,8 +360,19 @@ export function parseSpend(input: string, currency: CurrencyCode = "INR"): Parse
     // 3. Parse Date
     const { date, raw: dateRaw } = parseDate(input);
 
-    // 4. Clean Description
-    const description = cleanDescription(input, amountRaw, dateRaw);
+    // 4. Clean Description (also strip currency keywords to avoid junk in desc)
+    let description = cleanDescription(input, amountRaw, dateRaw);
+    
+    // Clean explicit currency mentions
+    ["peso", "php", "₱", "dollar", "usd", "buck", "$", "euro", "eur", "€", "rupee", "inr", "rs", "₹", "pesos", "dollars", "bucks", "euros", "rupees"].forEach(kw => {
+        const regex = new RegExp(`\\b${kw}\\b`, "i");
+        description = description.replace(regex, "");
+    });
+    // Also remove stray symbols
+    description = description.replace(/[₹$€₱]/g, "").replace(/\s+/g, " ").trim();
+    if (description.length > 0) {
+        description = description.charAt(0).toUpperCase() + description.slice(1);
+    }
 
     if (input.length > 80) {
         confidence -= 0.1;

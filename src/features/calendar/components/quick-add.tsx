@@ -10,6 +10,9 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
 import { PRO_FEATURES } from "@/lib/intelligence/feature-gate";
+import { useCurrency } from "@/context/CurrencyContext";
+import { getCurrencySymbol } from "@/lib/money";
+
 
 interface QuickAddModalProps {
     date: Date | null;
@@ -23,8 +26,10 @@ export function QuickAddModal({ date, isOpen, onClose }: QuickAddModalProps) {
     const inputRef = useRef<HTMLInputElement>(null);
     const { addSpend } = useSpends();
     const { user, isPro } = useAuth();
+    const { activeCurrency } = useCurrency();
 
     // Focus input when opened
+
     useEffect(() => {
         if (isOpen && inputRef.current) {
             // Small delay to allow animation to start
@@ -116,7 +121,7 @@ export function QuickAddModal({ date, isOpen, onClose }: QuickAddModalProps) {
                                     value={input}
                                     onChange={(e) => setInput(e.target.value)}
                                     onKeyDown={handleKeyDown}
-                                    placeholder={isSubmitting ? "AI is processing..." : "coffee 150..."}
+                                    placeholder={isSubmitting ? "AI is processing..." : `coffee ${getCurrencySymbol(activeCurrency)}150...`}
                                     className={cn(
                                         "w-full bg-transparent text-3xl font-serif text-brand-ink placeholder:text-brand-lichen/50 focus:outline-none text-center transition-all",
                                         isSubmitting && "animate-pulse opacity-70"

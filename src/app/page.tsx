@@ -20,7 +20,7 @@ import { AlertCircle } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CurrencySelector } from "@/components/CurrencySelector";
 import { useCurrency } from "@/context/CurrencyContext";
-import { formatAmount } from "@/lib/money";
+import { formatAmount, getCurrencySymbol } from "@/lib/money";
 import { useAuth } from "@/context/AuthContext";
 import { LandingContent } from "@/components/ui/landing/landing";
 import { JournalHero } from "@/components/ui/journal-hero";
@@ -94,7 +94,7 @@ function JournalPage() {
         setInput("");
 
       } catch {
-        setInputError("Try 'coffee 150' or 'uber 300'");
+        setInputError(`Try 'coffee ${getCurrencySymbol(activeCurrency)}150' or 'uber ${getCurrencySymbol(activeCurrency)}300'`);
         setIsAiProcessing(false);
       }
     }
