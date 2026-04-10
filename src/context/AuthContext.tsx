@@ -85,19 +85,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }, []);
 
     const signInWithGoogle = async () => {
+        const redirectTo = typeof window !== 'undefined'
+            ? `${window.location.origin}/`
+            : undefined;
+
         const { error } = await supabase.auth.signInWithOAuth({
             provider: 'google',
             options: {
-                redirectTo: typeof window !== 'undefined' ? `${window.location.origin}/` : undefined,
+                redirectTo,
+                queryParams: {
+                    access_type: 'offline',
+                    prompt: 'consent',
+                },
             },
         });
         return { error };
     };
 
     const signInWithOtp = async (email: string) => {
+        const emailRedirectTo = typeof window !== 'undefined'
+            ? `${window.location.origin}/`
+            : undefined;
+
         return await supabase.auth.signInWithOtp({
             email,
-            options: { shouldCreateUser: true },
+            options: {
+                shouldCreateUser: true,
+                emailRedirectTo,
+            },
         });
     };
 

@@ -8,6 +8,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { useRazorpay } from "@/components/RazorpayCheckout";
+import { useToast } from "@/components/ui/toast";
+import { useAuth } from "@/context/AuthContext";
 
 interface Plan {
   id: string;
@@ -89,6 +91,20 @@ const plans: Plan[] = [
 
 export function PricingSection() {
   const { openCheckout, isLoading } = useRazorpay();
+  const { user } = useAuth();
+  const { toast } = useToast();
+
+  const handleAction = (planId: string, price: number) => {
+    if (price > 0 && !user) {
+      toast({
+        type: "info",
+        message: "Sign in required",
+        description: "Please enter your journal first to choose a flow plan."
+      });
+      return;
+    }
+    openCheckout(planId);
+  };
 
   return (
     <section id="pricing" className="relative z-10 py-40 px-6 bg-brand-cream border-t border-brand-lichen/10">
@@ -187,7 +203,7 @@ export function PricingSection() {
               </div>
 
               <button
-                onClick={() => plan.price > 0 && openCheckout(plan.id)}
+                onClick={() => handleAction(plan.id, plan.price)}
                 disabled={isLoading && plan.price > 0}
                 className={cn(
                   "w-full py-5 rounded-2xl font-bold lowercase transition-all duration-300 flex items-center justify-center gap-2 group/btn shadow-xl shadow-brand-ink/10",
