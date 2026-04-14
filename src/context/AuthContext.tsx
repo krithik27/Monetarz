@@ -126,11 +126,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const signOut = async () => {
         try {
-            await supabase.auth.signOut();
+            // Attempt to sign out from Supabase with a fast timeout to prevent UI hang in dev/poor network
+            const signOutPromise = supabase.auth.signOut();
+            const timeoutPromise = new Promise((_, reject) => 
+                setTimeout(() => reject(new Error("Sign out timed out")), 1500)
+            );
+
+            await Promise.race([signOutPromise, timeoutPromise]).catch(err => {
+                console.warn("Supabase signOut warning or timeout:", err);
+            });
         } catch (error) {
             console.error("Supabase signOut error:", error);
         } finally {
-            // Force local state clear immediately to ensure UI updates
+            // 2. FORCE clear everything locally regardless of server response
+            if (typeof window !== 'undefined') {
+                // Clear specific auth and dev state
+                localStorage.removeItem('monetarz_pro_override');
+                // We could do localStorage.clear() but let's be slightly more targeted if needed.
+                // Actually, for a clean sign out, clear is best.
+                localStorage.clear(); 
+                
+                // Clear session cookies
+                const cookies = document.cookie.split(";");
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i];
+                    const eqPos = cookie.indexOf("=");
+                    const name = eqPos > -1 ? cookie.substr(0, eqPos).trim() : cookie.trim();
+                    document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+                }
+            }
+
+            // Reset local React state immediately
             setSession(null);
             setUser(null);
             setDbIsPro(false);

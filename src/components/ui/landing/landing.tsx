@@ -2,7 +2,7 @@
 
 import { motion, useMotionValue, useMotionTemplate } from "framer-motion";
 import Link from "next/link";
-import { Sparkles, Activity, Shield } from "lucide-react";
+import { Sparkles, Activity, Shield, ArrowRight, ChevronRight } from "lucide-react";
 import { SocialProofAvatars } from "./social-proof-avatars";
 import { FeatureSection } from "./feature-section";
 import { PricingSection } from "./pricing-card";
@@ -131,16 +131,23 @@ export function LandingContent() {
                     </p>
 
                     <div className="flex flex-col md:flex-row items-center justify-center gap-6">
-                        <div className="flex items-center p-1.5 rounded-2xl bg-white border border-brand-lichen/30 shadow-xl shadow-brand-moss/5 w-full md:w-auto transition-transform hover:scale-[1.02] duration-300">
-                            <input
-                                type="email"
-                                placeholder="enter your email..."
-                                className="bg-transparent px-6 py-3 w-full md:w-64 focus:outline-none text-brand-ink lowercase font-light"
-                            />
-                            <button className="px-8 py-3 rounded-xl bg-orange-500 text-brand-cream hover:bg-orange-600 transition-all font-bold lowercase whitespace-nowrap">
-                                join waitlist
-                            </button>
-                        </div>
+                        {user ? (
+                            <Link
+                                href="/account"
+                                className="px-12 py-5 rounded-2xl bg-brand-ink text-brand-cream hover:bg-brand-moss transition-all text-lg font-bold lowercase shadow-2xl shadow-brand-ink/20 flex items-center gap-2 group"
+                            >
+                                go to dashboard
+                                <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                            </Link>
+                        ) : (
+                            <Link
+                                href="/sign-in"
+                                className="px-12 py-5 rounded-2xl bg-orange-500 text-brand-cream hover:bg-orange-600 transition-all text-lg font-bold lowercase shadow-2xl shadow-orange-500/20 flex items-center gap-2 group"
+                            >
+                                start your journey
+                                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                            </Link>
+                        )}
                     </div>
 
                     {/* Handwritten Annotation 2 */}

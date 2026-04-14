@@ -90,6 +90,19 @@ function AccountPageContent() {
     const [savedDetails, setSavedDetails] = useState(false);
     const [isSavingContext, setIsSavingContext] = useState(false);
     const [savedContext, setSavedContext] = useState(false);
+    const [isSigningOut, setIsSigningOut] = useState(false);
+
+    const handleSignOut = async () => {
+        setIsSigningOut(true);
+        try {
+            await signOut();
+            // Force a full page reload to the landing page to clear all client memory/state
+            window.location.href = "/";
+        } catch (error) {
+            console.error("Sign out failed:", error);
+            window.location.href = "/";
+        }
+    };
 
     const handleSaveDetails = async () => {
         if (!user) return;
@@ -240,10 +253,11 @@ function AccountPageContent() {
                                     <p className="text-lg font-black font-sans text-brand-ink">{user?.email}</p>
                                 </div>
                                 <button
-                                    onClick={async () => { await signOut(); window.location.href = "/"; }}
-                                    className="flex items-center gap-2 px-6 py-3 rounded-xl border border-brand-lichen/30 text-brand-ink/60 hover:text-red-600 hover:bg-red-50 transition-all duration-500 font-sans font-bold lowercase"
+                                    onClick={handleSignOut}
+                                    disabled={isSigningOut}
+                                    className="flex items-center gap-2 px-6 py-3 rounded-xl border border-brand-lichen/30 text-brand-ink/60 hover:text-red-600 hover:bg-red-50 transition-all duration-500 font-sans font-bold lowercase disabled:opacity-50"
                                 >
-                                    <LogOut className="w-4 h-4" /> Sign Out
+                                    <LogOut className="w-4 h-4" /> {isSigningOut ? "Signing Out..." : "Sign Out"}
                                 </button>
                             </div>
                         </section>

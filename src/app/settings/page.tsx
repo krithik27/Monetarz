@@ -61,6 +61,7 @@ export default function SettingsPage() {
     const [isPurging, setIsPurging] = useState(false);
     const [showPurgeConfirm, setShowPurgeConfirm] = useState(false);
     const [showExportConfirm, setShowExportConfirm] = useState(false);
+    const [isSigningOut, setIsSigningOut] = useState(false);
 
     const { spends = [] } = useSpends();
     const retentionDays = user?.user_metadata?.data_retention_days || 90;
@@ -81,12 +82,14 @@ export default function SettingsPage() {
 
 
     const handleSignOut = async () => {
+        setIsSigningOut(true);
         try {
             await signOut();
             // Force a full page reload to the landing page to clear all client memory/state
             window.location.href = "/";
         } catch (error) {
             console.error("Sign out failed:", error);
+            window.location.href = "/";
         }
     };
 
@@ -474,13 +477,14 @@ export default function SettingsPage() {
                         {/* Sign Out */}
                         <button
                             onClick={handleSignOut}
-                            className="p-6 rounded-3xl bg-white/40 backdrop-blur-xl border border-white/60 shadow-sm flex items-center gap-4 hover:bg-white/60 transition-all group"
+                            disabled={isSigningOut}
+                            className="p-6 rounded-3xl bg-white/40 backdrop-blur-xl border border-white/60 shadow-sm flex items-center gap-4 hover:bg-white/60 transition-all group disabled:opacity-50"
                         >
                             <div className="w-10 h-10 rounded-xl bg-brand-mist/40 flex items-center justify-center text-brand-moss group-hover:bg-brand-moss group-hover:text-white transition-all duration-500">
                                 <LogOut className="w-5 h-5" />
                             </div>
                             <div className="text-left">
-                                <p className="font-sans font-bold text-brand-ink text-lg uppercase tracking-tight">Sign Out</p>
+                                <p className="font-sans font-bold text-brand-ink text-lg uppercase tracking-tight">{isSigningOut ? "signing out..." : "Sign Out"}</p>
                                 <p className="font-sans text-brand-sage/60 text-sm lowercase leading-tight">Your data stays safe until you return.</p>
                             </div>
                         </button>
