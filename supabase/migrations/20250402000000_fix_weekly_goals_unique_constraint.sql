@@ -33,7 +33,7 @@ BEGIN
         WHERE tablename = 'weekly_goals' AND policyname = 'Users can view own weekly goals'
     ) THEN
         CREATE POLICY "Users can view own weekly goals" ON weekly_goals
-            FOR SELECT USING (auth.uid() = user_id);
+            FOR SELECT TO authenticated USING ((SELECT auth.uid()) = user_id);
     END IF;
 
     IF NOT EXISTS (
@@ -41,7 +41,7 @@ BEGIN
         WHERE tablename = 'weekly_goals' AND policyname = 'Users can insert own weekly goals'
     ) THEN
         CREATE POLICY "Users can insert own weekly goals" ON weekly_goals
-            FOR INSERT WITH CHECK (auth.uid() = user_id);
+            FOR INSERT TO authenticated WITH CHECK ((SELECT auth.uid()) = user_id);
     END IF;
 
     IF NOT EXISTS (
@@ -49,7 +49,7 @@ BEGIN
         WHERE tablename = 'weekly_goals' AND policyname = 'Users can update own weekly goals'
     ) THEN
         CREATE POLICY "Users can update own weekly goals" ON weekly_goals
-            FOR UPDATE USING (auth.uid() = user_id);
+            FOR UPDATE TO authenticated USING ((SELECT auth.uid()) = user_id);
     END IF;
 
     IF NOT EXISTS (
@@ -57,7 +57,7 @@ BEGIN
         WHERE tablename = 'weekly_goals' AND policyname = 'Users can delete own weekly goals'
     ) THEN
         CREATE POLICY "Users can delete own weekly goals" ON weekly_goals
-            FOR DELETE USING (auth.uid() = user_id);
+            FOR DELETE TO authenticated USING ((SELECT auth.uid()) = user_id);
     END IF;
 END $$;
 

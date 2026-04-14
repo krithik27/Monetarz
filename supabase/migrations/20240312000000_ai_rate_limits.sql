@@ -15,7 +15,8 @@ alter table public.ai_usage_logs enable row level security;
 -- Policy: Users can only see their own usage
 create policy "Users can view their own AI usage"
     on public.ai_usage_logs for select
-    using (auth.uid() = user_id);
+    to authenticated
+    using ((select auth.uid()) = user_id);
 
 -- Function to increment AI usage and check limit
 -- Returns TRUE if allowed (under limit), FALSE if blocked
@@ -28,7 +29,7 @@ declare
     v_current_calls integer;
 begin
     -- Check if user is trying to act as themselves
-    if auth.uid() != p_user_id then
+    if (select auth.uid()) != p_user_id then
         return false;
     end if;
 

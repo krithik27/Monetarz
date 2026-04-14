@@ -18,7 +18,6 @@ create table if not exists entries (
 );
 
 -- Indexes for optimized hot-path queries
-create index if not exists idx_entries_user_archived on entries(user_id, is_archived);
 create index if not exists idx_entries_user_archived_date on entries(user_id, is_archived, date);
 
 -- Pre-aggregated summaries for fast historical lookups (Renamed from monthly_trends)
@@ -93,18 +92,18 @@ alter table recurrent_spends enable row level security;
 alter table category_budgets enable row level security;
 
 -- Policies
-create policy "entries_select_policy" on entries for select using ((select auth.uid()) = user_id);
-create policy "entries_insert_policy" on entries for insert with check ((select auth.uid()) = user_id);
-create policy "entries_update_policy" on entries for update using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
-create policy "entries_delete_policy" on entries for delete using ((select auth.uid()) = user_id);
+create policy "entries_select_policy" on entries for select to authenticated using ((select auth.uid()) = user_id);
+create policy "entries_insert_policy" on entries for insert to authenticated with check ((select auth.uid()) = user_id);
+create policy "entries_update_policy" on entries for update to authenticated using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+create policy "entries_delete_policy" on entries for delete to authenticated using ((select auth.uid()) = user_id);
 
-create policy "Users can manage their own weekly_goals" on weekly_goals for all using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
-create policy "Users can manage their own financial_profiles" on financial_profiles for all using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
-create policy "Users can manage their own recurrent_spends" on recurrent_spends for all using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
-create policy "Users can manage their own category_budgets" on category_budgets for all using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+create policy "Users can manage their own weekly_goals" on weekly_goals for all to authenticated using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+create policy "Users can manage their own financial_profiles" on financial_profiles for all to authenticated using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+create policy "Users can manage their own recurrent_spends" on recurrent_spends for all to authenticated using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+create policy "Users can manage their own category_budgets" on category_budgets for all to authenticated using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
 
-create policy "Users can read their own monthly_summary" on monthly_summary for select using ((select auth.uid()) = user_id);
-create policy "Users can read their own audit_logs" on audit_logs for select using ((select auth.uid()) = user_id);
+create policy "Users can read their own monthly_summary" on monthly_summary for select to authenticated using ((select auth.uid()) = user_id);
+create policy "Users can read their own audit_logs" on audit_logs for select to authenticated using ((select auth.uid()) = user_id);
 
 -- 2. RPC FUNCTIONS (Server-side Aggregation)
 
@@ -451,9 +450,9 @@ create table if not exists user_feedback (
 alter table savings_goals enable row level security;
 alter table user_feedback enable row level security;
 
-create policy "Users can manage their own savings_goals" on savings_goals for all using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
-create policy "Anyone can insert feedback" on user_feedback for insert with check ((select auth.uid()) = user_id);
-create policy "Users can read their own feedback" on user_feedback for select using ((select auth.uid()) = user_id);
+create policy "Users can manage their own savings_goals" on savings_goals for all to authenticated using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+create policy "Users can insert feedback" on user_feedback for insert to authenticated with check ((select auth.uid()) = user_id);
+create policy "Users can read their own feedback" on user_feedback for select to authenticated using ((select auth.uid()) = user_id);
 
 create or replace function purge_old_feedback()
 returns void
@@ -553,7 +552,7 @@ create table if not exists user_profiles (
 alter table user_profiles enable row level security;
 
 create policy "Users can read own profile"
-on user_profiles for select
-using (auth.uid() = user_id);
+on user_profiles for select to authenticated
+using ((select auth.uid()) = user_id);
 
 -- Note: No INSERT or UPDATE policies for clients. Only the service_role key can modify this table.

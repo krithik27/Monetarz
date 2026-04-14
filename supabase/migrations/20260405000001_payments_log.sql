@@ -15,7 +15,10 @@ ALTER TABLE public.payments_log ENABLE ROW LEVEL SECURITY;
 -- Policy: Users can see their own payments
 CREATE POLICY "Users can view their own payment logs"
     ON public.payments_log FOR SELECT
-    USING (auth.uid() = user_id);
+    TO authenticated
+    USING ((SELECT auth.uid()) = user_id);
+
+CREATE INDEX IF NOT EXISTS idx_payments_log_user_id ON public.payments_log(user_id);
 
 -- Add subscription metadata to user_profiles if missing
 ALTER TABLE public.user_profiles 
