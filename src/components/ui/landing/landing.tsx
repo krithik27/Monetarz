@@ -156,7 +156,7 @@ export function LandingContent() {
                             <path d="M10,10 Q50,40 90,10" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                             <path d="M85,5 L95,15 L85,25" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                         </svg>
-                        by mindful people.
+                        crafted with care.
                     </div>
 
                     <motion.div
@@ -172,16 +172,16 @@ export function LandingContent() {
                                 { src: "https://api.dicebear.com/9.x/adventurer/svg?seed=Jude", alt: "User 3" },
                                 { src: "https://api.dicebear.com/9.x/adventurer/svg?seed=Oliver", alt: "User 4" },
                             ]}
-                            extraCount={1}
+                            extraCount={10}
                         >
-                            <p className="text-[10px] tracking-widest uppercase opacity-30 mt-4 font-bold">trusted by n+ mindful investors</p>
+                            <p className="text-[10px] tracking-widest uppercase opacity-30 mt-4 font-bold">trusted by mindful investors</p>
                         </SocialProofAvatars>
                     </motion.div>
                 </motion.div>
             </section>
 
             {/* Screenshot Stack Section */}
-            
+
             {/* Feature Section */}
             <FeatureSection />
 

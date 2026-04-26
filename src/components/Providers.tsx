@@ -19,9 +19,12 @@ function AppGate({ children }: { children: ReactNode }) {
     useEffect(() => {
         if (isLoading) return;
 
+        // Clean pathname to remove trailing slashes for robust matching
+        const cleanPathname = pathname.replace(/\/$/, "") || "/";
         const publicRoutes = ["/sign-in", "/", "/privacy", "/terms", "/refund"];
-        if (!user && !publicRoutes.includes(pathname)) {
-            router.push("/sign-in");
+
+        if (!user && !publicRoutes.includes(cleanPathname)) {
+            router.push(`/sign-in?redirect=${encodeURIComponent(pathname)}`);
             return;
         }
     }, [user, isLoading, pathname, router]);
@@ -36,7 +39,8 @@ function AppGate({ children }: { children: ReactNode }) {
     }
 
     // Allow access to sign-in and root landing even if not logged in
-    const isPublicRoute = ["/sign-in", "/", "/privacy", "/terms", "/refund"].includes(pathname);
+    const cleanPathname = pathname.replace(/\/$/, "") || "/";
+    const isPublicRoute = ["/sign-in", "/", "/privacy", "/terms", "/refund"].includes(cleanPathname);
     
     if (!user && !isPublicRoute) {
         return null; // Will redirect via useEffect
