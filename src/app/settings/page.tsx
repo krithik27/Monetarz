@@ -193,6 +193,24 @@ export default function SettingsPage() {
                     </div>
 
                     <div className="w-full grid grid-cols-1 gap-4">
+                        {!isPro && (
+                            <button
+                                onClick={() => router.push("/pricing")}
+                                className="w-full p-6 rounded-3xl bg-orange-500 text-white shadow-xl shadow-orange-500/20 hover:bg-orange-600 transition-all flex items-center justify-between group"
+                            >
+                                <div className="flex items-center gap-4">
+                                    <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center text-white backdrop-blur-md">
+                                        <Zap className="w-6 h-6" />
+                                    </div>
+                                    <div className="text-left">
+                                        <p className="font-sans font-bold text-xl uppercase tracking-tight">Upgrade to Horizon Pro</p>
+                                        <p className="font-sans text-orange-100 text-sm font-medium lowercase">Unlock AI insights, forecasts, and more.</p>
+                                    </div>
+                                </div>
+                                <ChevronRight className="w-5 h-5 opacity-70 group-hover:translate-x-1 group-hover:opacity-100 transition-all" />
+                            </button>
+                        )}
+
                         {/* Profile Summary Card */}
                         <div className="p-6 rounded-3xl bg-white/40 backdrop-blur-xl border border-white/60 shadow-sm relative overflow-hidden group">
                             <div className=" flex items-center justify-between relative z-10">

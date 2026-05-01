@@ -60,12 +60,14 @@ export async function proxy(request: NextRequest) {
         '/sign-in',
         '/login',
         '/signup',
+        '/pricing',
         '/reset-password',
         '/favicon.ico',
     ];
 
     const isPublicRoute = publicRoutes.some(route => pathname === route) ||
         pathname.startsWith('/api/public/') ||
+        pathname.startsWith('/api/razorpay/webhook') ||
         pathname.startsWith('/_next/') ||
         pathname.startsWith('/images/');
 

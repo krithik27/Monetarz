@@ -79,13 +79,17 @@ export async function POST(request: Request) {
                 status: 'captured'
             });
 
+            // 5. ATOMIC UPGRADE: Create or update profile to ensure user becomes Pro
             const { error: profileError } = await supabaseAdmin
                 .from('user_profiles')
-                .update({ 
+                .upsert({ 
+                    user_id: userId,
                     is_pro: true,
-                    plan_type: planId || 'unknown'
-                })
-                .eq('user_id', userId);
+                    plan_type: planId || 'unknown',
+                    updated_at: new Date().toISOString()
+                }, { 
+                    onConflict: 'user_id' 
+                });
 
             if (profileError) throw profileError;
 

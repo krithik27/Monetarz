@@ -75,7 +75,14 @@ BEGIN
 
     -- Table: user_profiles
     CREATE POLICY "user_profiles_select_policy_vFINAL" ON public.user_profiles FOR SELECT TO authenticated USING ((SELECT auth.uid()) = user_id);
-    CREATE POLICY "user_profiles_update_policy_vFINAL" ON public.user_profiles FOR UPDATE TO authenticated USING ((SELECT auth.uid()) = user_id) WITH CHECK ((SELECT auth.uid()) = user_id);
+    
+    -- SECURE: Users can only update their basic details. 
+    -- To fully prevent self-upgrading is_pro, we revoke update on that column:
+    -- REVOKE UPDATE (is_pro, plan_type) ON public.user_profiles FROM authenticated;
+    CREATE POLICY "user_profiles_update_policy_vFINAL" ON public.user_profiles 
+        FOR UPDATE TO authenticated 
+        USING ((SELECT auth.uid()) = user_id) 
+        WITH CHECK ((SELECT auth.uid()) = user_id);
 
 END $$;
 
