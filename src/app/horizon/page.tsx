@@ -190,11 +190,11 @@ export default function HorizonPage() {
                             >
                                 {/* ── Analytics Charts ──────────────────────────── */}
                                 <div className="flex flex-col gap-8 pt-4">
-                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                                        <InteractiveFinancialChart data={spends} />
-                                        <TransactionFrequencyChart data={spends} />
-                                        <CategorySpendChart data={spends} />
-                                        <WeeklySpendChart data={spends} />
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                        <div className="min-w-0"><InteractiveFinancialChart data={spends} /></div>
+                                        <div className="min-w-0"><TransactionFrequencyChart data={spends} /></div>
+                                        <div className="min-w-0"><CategorySpendChart data={spends} /></div>
+                                        <div className="min-w-0"><WeeklySpendChart data={spends} /></div>
                                     </div>
                                 </div>
                             </motion.div>

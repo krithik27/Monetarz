@@ -11,11 +11,13 @@ import { AvatarPicker } from "@/components/ui/avatar-picker";
 import { useAvatar } from "@/hooks/useAvatar";
 import {
     Sparkles, LogOut, CheckCircle2, ShieldCheck, Zap,
-    BarChart3, MessageSquareQuote, ChevronDown, User,
+    BarChart3, MessageSquareQuote, ChevronDown, User, Download, Archive,
 } from "lucide-react";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { useSpends } from "@/context/SpendsContext";
 import { useRazorpay } from "@/components/RazorpayCheckout";
+import { generateMonthlyCSV, downloadCSV } from "@/lib/export-csv";
+import { useCurrency } from "@/context/CurrencyContext";
 
 // ─── Pricing ──────────────────────────────────────────────────────────────────
 const PricingComponent = () => {
@@ -77,7 +79,8 @@ function StatCard({ label, value }: { label: string; value: string | number }) {
 // ─── Page Content ─────────────────────────────────────────────────────────────
 function AccountPageContent() {
     const { user, isPro, signOut, updateUserMetadata } = useAuth();
-    const { spends } = useSpends();
+    const { spends, incomeSources, goals, recurrentSpends, categoryBudgets } = useSpends();
+    const { activeCurrency } = useCurrency();
     const { config: avatarConfig } = useAvatar();
     const router = useRouter();
 
@@ -91,6 +94,7 @@ function AccountPageContent() {
     const [isSavingContext, setIsSavingContext] = useState(false);
     const [savedContext, setSavedContext] = useState(false);
     const [isSigningOut, setIsSigningOut] = useState(false);
+    const [selectedExportMonth, setSelectedExportMonth] = useState<string | null>(null);
 
     const handleSignOut = async () => {
         setIsSigningOut(true);
@@ -238,6 +242,98 @@ function AccountPageContent() {
                                     {isSavingContext ? "Syncing..." : "Save Context"}
                                 </button>
                             </div>
+                        </section>
+
+                        <section className="pt-12 border-t border-brand-lichen/20 space-y-6">
+                            <div className="flex items-center gap-4">
+                                <div className="p-2.5 rounded-xl bg-brand-moss/5">
+                                    <Archive className="w-5 h-5 text-brand-moss" />
+                                </div>
+                                <h2 className="text-2xl font-bold font-sans uppercase tracking-tight text-brand-ink">
+                                    Data Archive
+                                </h2>
+                            </div>
+                            <p className="text-sm text-brand-sage font-serif italic">
+                                Download a comprehensive CSV of any past month — includes your journal entries, income wallet, savings goals, recurrent commitments, and category budgets.
+                            </p>
+
+                            {/* Month chips */}
+                            <div className="flex flex-wrap gap-2">
+                                {(() => {
+                                    // Build unique months from spends, excluding current month
+                                    const currentMonth = new Date().toISOString().slice(0, 7);
+                                    const months = Array.from(new Set(
+                                        spends.map(s => new Date(s.date).toISOString().slice(0, 7))
+                                    )).filter(m => m < currentMonth).sort().reverse();
+
+                                    if (months.length === 0) {
+                                        return (
+                                            <p className="text-sm text-brand-sage/60 italic font-serif">
+                                                No previous month data available yet.
+                                            </p>
+                                        );
+                                    }
+
+                                    return months.map(month => {
+                                        const [y, m] = month.split("-").map(Number);
+                                        const label = new Date(y, m - 1, 1).toLocaleString("en-IN", { month: "short", year: "numeric" });
+                                        const isSelected = selectedExportMonth === month;
+                                        return (
+                                            <button
+                                                key={month}
+                                                onClick={() => setSelectedExportMonth(isSelected ? null : month)}
+                                                className={`px-4 py-2 rounded-xl text-sm font-sans font-bold transition-all border ${
+                                                    isSelected
+                                                        ? "bg-brand-moss text-white border-brand-moss shadow-md"
+                                                        : "bg-white/40 text-brand-ink border-brand-lichen/30 hover:border-brand-moss hover:bg-brand-moss/5"
+                                                }`}
+                                            >
+                                                {label}
+                                            </button>
+                                        );
+                                    });
+                                })()}
+                            </div>
+
+                            {selectedExportMonth && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: 6 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className="flex items-center gap-4 bg-brand-moss/5 border border-brand-moss/20 rounded-2xl p-4"
+                                >
+                                    <div className="flex-1">
+                                        <p className="text-sm font-sans font-bold text-brand-ink">
+                                            {(() => {
+                                                const [y, m] = selectedExportMonth.split("-").map(Number);
+                                                return new Date(y, m - 1, 1).toLocaleString("en-IN", { month: "long", year: "numeric" });
+                                            })()}
+                                        </p>
+                                        <p className="text-xs text-brand-sage font-serif italic">
+                                            {spends.filter(s => new Date(s.date).toISOString().slice(0, 7) === selectedExportMonth).length} journal entries + all Horizon data
+                                        </p>
+                                    </div>
+                                    <button
+                                        onClick={() => {
+                                            const csv = generateMonthlyCSV({
+                                                month: selectedExportMonth,
+                                                spends,
+                                                incomeSources,
+                                                goals,
+                                                recurrentSpends,
+                                                categoryBudgets,
+                                                currency: activeCurrency,
+                                            });
+                                            const [y, m] = selectedExportMonth.split("-").map(Number);
+                                            const label = new Date(y, m - 1, 1).toLocaleString("en-IN", { month: "long", year: "numeric" }).replace(" ", "-");
+                                            downloadCSV(csv, `Monetarz-${label}.csv`);
+                                        }}
+                                        className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-moss text-white font-sans font-bold text-sm shadow-md hover:bg-brand-ink transition-all"
+                                    >
+                                        <Download className="w-4 h-4" />
+                                        Download CSV
+                                    </button>
+                                </motion.div>
+                            )}
                         </section>
 
                         <section className="pt-12 border-t border-brand-lichen/20">

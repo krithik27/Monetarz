@@ -32,6 +32,7 @@ function JournalPage() {
   const [inputError, setInputError] = useState<string | null>(null);
   const [isAiProcessing, setIsAiProcessing] = useState(false);
   const [showOlderEntries, setShowOlderEntries] = useState(false);
+  const [showMobileHint, setShowMobileHint] = useState(false);
   const { user, isPro } = useAuth();
 
   // Focus Management
@@ -92,6 +93,11 @@ function JournalPage() {
         const spendWithCurrency = { ...parsedSpend, currency: activeCurrency };
         await addSpend(spendWithCurrency);
         setInput("");
+        // Mobile-only: pulse hint after successful entry
+        if (typeof window !== 'undefined' && window.innerWidth < 768) {
+          setShowMobileHint(true);
+          setTimeout(() => setShowMobileHint(false), 2500);
+        }
 
       } catch {
         setInputError(`Try 'coffee ${getCurrencySymbol(activeCurrency)}150' or 'uber ${getCurrencySymbol(activeCurrency)}300'`);
@@ -179,7 +185,8 @@ function JournalPage() {
             placeholder={isAiProcessing ? "AI is processing..." : "How did money flow today?"}
             className={cn(
               "w-full bg-transparent border-b-2 border-brand-lichen/50 text-2xl md:text-5xl py-4 text-center text-brand-ink placeholder:text-brand-sage/40 focus:outline-none focus:border-brand-moss transition-colors",
-              isAiProcessing && "animate-pulse opacity-70 border-brand-moss"
+              isAiProcessing && "animate-pulse opacity-70 border-brand-moss",
+              showMobileHint && "border-brand-moss"
             )}
             disabled={isLoading || isAiProcessing}
             spellCheck={false}
@@ -194,6 +201,17 @@ function JournalPage() {
                 className="absolute left-0 right-0 text-center mt-4 text-red-800/60 font-serif text-lg"
               >
                 {inputError}
+              </motion.p>
+            )}
+            {showMobileHint && !inputError && (
+              <motion.p
+                key="mobile-hint"
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: [0, 1, 1, 0] }}
+                transition={{ duration: 2.2, times: [0, 0.1, 0.8, 1] }}
+                className="md:hidden absolute left-0 right-0 text-center mt-4 text-brand-moss/70 font-sans text-sm tracking-widest uppercase"
+              >
+                ✓ logged — add another
               </motion.p>
             )}
           </AnimatePresence>

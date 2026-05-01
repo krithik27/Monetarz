@@ -116,7 +116,7 @@ export default function CalendarPage() {
             className="min-h-screen text-brand-ink font-sans selection:bg-brand-moss/20 flex flex-col w-full relative"
         >
             <Navbar />
-            <div className="w-full flex-grow flex flex-col px-4 md:px-8 lg:px-12 pt-20 md:pt-32 pb-8">
+            <div className="w-full flex-grow flex flex-col px-4 md:px-8 lg:px-12 pt-20 md:pt-32 pb-28">
                 <div className="w-full h-full flex flex-col bg-white/40 backdrop-blur-sm rounded-3xl shadow-sm ring-1 ring-brand-lichen/10 transition-all duration-700">
                     <CalendarProvider className="flex-grow p-4 md:p-8">
                         <div className="flex flex-col md:flex-row items-center justify-between mb-8 md:mb-12 gap-6">
@@ -137,7 +137,7 @@ export default function CalendarPage() {
                             </div>
 
                             {/* Filters Row */}
-                            <div className="flex flex-wrap flex-1 items-center justify-start md:justify-end gap-3 md:gap-6 mt-4 md:mt-0 w-full md:w-auto overflow-x-auto pb-2 md:pb-0 scrollbar-hide">
+                            <div className="flex flex-wrap flex-1 items-center justify-start md:justify-end gap-3 md:gap-6 mt-4 md:mt-0 w-full md:w-auto overflow-x-auto pb-2 md:pb-0 scrollbar-hide snap-x snap-mandatory">
                                 <div className="flex items-center gap-2 md:gap-3 shrink-0">
                                     <CalendarMonthPicker className="w-32 md:w-40 bg-white/50 border-brand-lichen/20 hover:bg-white transition-all rounded-xl" />
                                     <CalendarYearPicker start={yearRange.start} end={yearRange.end} className="w-24 md:w-28 bg-white/50 border-brand-lichen/20 hover:bg-white transition-all rounded-xl" />

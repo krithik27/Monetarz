@@ -87,16 +87,16 @@ export const RhythmBoard = () => {
     };
 
     return (
-        <div className="bg-white/80 backdrop-blur-xl p-8 md:p-10 rounded-[3rem] border border-white/20 shadow-sm min-h-[400px] max-h-[600px] flex flex-col relative overflow-hidden">
-            <div className="flex justify-between items-start mb-12 px-2 flex-shrink-0">
+        <div className="bg-white/80 backdrop-blur-xl p-6 md:p-10 rounded-[3rem] border border-white/20 shadow-sm min-h-[400px] max-h-[600px] flex flex-col relative overflow-hidden">
+            <div className="flex flex-col md:flex-row md:justify-between md:items-start mb-8 md:mb-12 px-2 gap-4 flex-shrink-0">
                 <div>
-                    <h3 className="text-4xl font-serif text-horizon-ink tracking-tight opacity-80">
+                    <h3 className="text-3xl md:text-4xl font-serif text-horizon-ink tracking-tight opacity-80">
                         Monthly Rhythms
                     </h3>
                     <p className="text-base text-horizon-muted font-serif italic mt-2">Visualization of your spending lanes</p>
                 </div>
 
-                <div className="relative flex items-center gap-3">
+                <div className="relative flex items-center gap-3 w-full md:w-auto">
                     <AnimatePresence mode="wait">
                         {!isSettingBudget ? (
                             <motion.div
@@ -104,12 +104,13 @@ export const RhythmBoard = () => {
                                 initial={{ opacity: 0, x: 20 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 exit={{ opacity: 0, x: 20 }}
+                                className="w-full md:w-auto"
                             >
                                 <BasicDropdown
                                     label="Track New Category"
                                     items={availableItems}
                                     onChange={handleStartAdding}
-                                    className="min-w-[200px]"
+                                    className="w-full md:min-w-[200px]"
                                 />
                             </motion.div>
                         ) : (
@@ -118,9 +119,9 @@ export const RhythmBoard = () => {
                                 initial={{ opacity: 0, x: 20 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 exit={{ opacity: 0, x: 20 }}
-                                className="flex items-center gap-2 bg-violet-50/50 p-2 rounded-2xl border border-violet-100"
+                                className="flex items-center gap-2 bg-violet-50/50 p-2 rounded-2xl border border-violet-100 w-full md:w-auto"
                             >
-                                <div className="flex flex-col px-2">
+                                <div className="flex flex-col px-2 flex-1">
                                     <span className="text-[10px] uppercase tracking-widest text-violet-400 font-sans font-bold">Monthly Budget</span>
                                     <div className="flex items-center gap-1">
                                         <span className="text-horizon-ink/40 font-serif">₹</span>
@@ -128,7 +129,7 @@ export const RhythmBoard = () => {
                                             type="number"
                                             value={newBudget}
                                             onChange={(e) => setNewBudget(e.target.value)}
-                                            className="bg-transparent border-none outline-none font-serif text-horizon-ink w-24 text-lg"
+                                            className="bg-transparent border-none outline-none font-serif text-horizon-ink w-full text-lg"
                                             autoFocus
                                             onKeyDown={(e) => e.key === "Enter" && handleConfirmBudget()}
                                         />

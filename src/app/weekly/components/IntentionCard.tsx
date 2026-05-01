@@ -184,8 +184,8 @@ export const IntentionCard = () => {
                             )}
                         </AnimatePresence>
 
-                        {/* Change / Clear controls */}
-                        <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        {/* Change / Clear controls — always visible on mobile, hover-only on desktop */}
+                        <div className="flex gap-2 mt-4 md:mt-0 md:absolute md:top-4 md:right-4 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                             <button
                                 onClick={() => { setInputValue(weeklyGoal.toString()); setIsEditing(true); }}
                                 className="text-xs text-brand-lichen hover:text-brand-moss bg-brand-mist/20 px-2 py-1 rounded"

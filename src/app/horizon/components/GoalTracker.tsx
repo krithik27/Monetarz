@@ -269,7 +269,7 @@ export const GoalTracker = () => {
                                                 )}
                                             </div>
 
-                                            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <div className="flex items-center gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                                                 <button
                                                     onClick={() => startEditing(goal)}
                                                     className="p-2 hover:bg-yellow-50 rounded-xl text-horizon-muted hover:text-yellow-500 transition-all"
@@ -351,9 +351,9 @@ export const GoalTracker = () => {
                                                         ) : (
                                                             <button
                                                                 onClick={() => setDepositingId(goal.id)}
-                                                                className="flex items-center gap-1.5 px-4 py-2 bg-violet-50 text-violet-500 rounded-xl text-[10px] font-sans font-bold uppercase tracking-widest hover:bg-violet-500 hover:text-white transition-all duration-300"
+                                                                className="flex items-center gap-1.5 px-3 py-2 bg-violet-50 text-violet-500 rounded-xl text-[10px] font-sans font-bold uppercase tracking-widest hover:bg-violet-500 hover:text-white transition-all duration-300"
                                                             >
-                                                                Deposit Funds <ChevronRight className="h-3 w-3" />
+                                                                <span className="hidden sm:inline">Deposit Funds </span><ChevronRight className="h-3 w-3" />
                                                             </button>
                                                         )
                                                     )}

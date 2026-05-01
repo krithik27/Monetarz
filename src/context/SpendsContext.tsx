@@ -34,6 +34,7 @@ export interface IncomeSource {
     name: string;
     amount: number;
     dayOfMonth?: number;
+    billingMonth?: string; // YYYY-MM — the month this source belongs to
 }
 
 type Feedback = {
@@ -339,6 +340,7 @@ export function SpendsProvider({ children }: { children: ReactNode }) {
                         frequency?: string;
                         is_active?: boolean;
                     }
+                    const currentMonth = new Date().toISOString().slice(0, 7); // YYYY-MM
                     const allRecurrent = recurrentRes.data as SupabaseRecurrentEntry[];
                     const incomes = allRecurrent
                         .filter(r => r.category === 'income' || r.category === 'salary')
@@ -346,8 +348,11 @@ export function SpendsProvider({ children }: { children: ReactNode }) {
                             id: r.id,
                             name: r.name,
                             amount: Number(r.amount),
-                            dayOfMonth: parseInt((r.frequency || "1").replace("day-", "")) || 1
-                        }));
+                            dayOfMonth: parseInt((r.frequency || "1").replace("day-", "")) || 1,
+                            billingMonth: (r as any).billing_month || currentMonth
+                        }))
+                        // Only show this month's active income sources
+                        .filter(r => r.billingMonth === currentMonth);
                     const outbound = allRecurrent.filter(r => r.category !== 'income' && r.category !== 'salary');
                     
                     if (incomes.length > 0) {
@@ -478,6 +483,7 @@ export function SpendsProvider({ children }: { children: ReactNode }) {
                     .in('category', ['income', 'salary']);
                 
                 if (sources.length > 0) {
+                    const currentMonth = new Date().toISOString().slice(0, 7);
                     const mapped = sources.map(s => ({
                         id: s.id || crypto.randomUUID(),
                         user_id: user!.id,
@@ -486,6 +492,7 @@ export function SpendsProvider({ children }: { children: ReactNode }) {
                         category: 'income',
                         frequency: `day-${s.dayOfMonth || 1}`,
                         is_active: true,
+                        billing_month: s.billingMonth || currentMonth,
                     }));
                     await supabase.from('recurrent_spends').insert(mapped);
                 }
@@ -497,7 +504,8 @@ export function SpendsProvider({ children }: { children: ReactNode }) {
 
     const addIncomeSource = async (source: Omit<IncomeSource, "id">) => {
         if (!user) return;
-        const newSource = { ...source, id: crypto.randomUUID() };
+        const currentMonth = new Date().toISOString().slice(0, 7);
+        const newSource = { ...source, id: crypto.randomUUID(), billingMonth: currentMonth };
         const next = [newSource, ...incomeSources];
         setIncomeSources(next);
         await syncIncomeSources(next);
