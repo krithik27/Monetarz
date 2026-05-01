@@ -165,7 +165,18 @@ export function SpendsProvider({ children }: { children: ReactNode }) {
     const loadData = useCallback(async (isInitial = true) => {
         // DEV PROXY MODE: Bypass Auth check for local data
         if (!IS_PROXY_MODE && !user) {
-            if (!authLoading) setIsLoading(false);
+            if (!authLoading) {
+                setIsLoading(false);
+                // Clear state to prevent data leaking between sessions
+                setSpends([]);
+                setGoals([]);
+                setIncomeSources([]);
+                setRecurrentSpends([]);
+                setFeedback([]);
+                setWeeklyGoal(0);
+                setMonthlyIntentionState(0);
+                setCategoryBudgets({});
+            }
             return;
         }
 

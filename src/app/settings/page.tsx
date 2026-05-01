@@ -509,21 +509,41 @@ export default function SettingsPage() {
 
                         {/* Admin Controls */}
                         {isAdmin && (
-                            <button
-                                onClick={() => router.push("/admin")}
-                                className="p-6 rounded-3xl bg-brand-moss/5 backdrop-blur-xl border border-brand-moss/20 shadow-sm flex items-center justify-between hover:bg-brand-moss/10 transition-all group"
-                            >
-                                <div className="flex items-center gap-4">
-                                    <div className="w-10 h-10 rounded-xl bg-brand-moss/10 flex items-center justify-center text-brand-moss group-hover:bg-brand-moss group-hover:text-white transition-all">
-                                        <Zap className="w-5 h-5" />
+                            <div className="space-y-4">
+                                <button
+                                    onClick={() => router.push("/admin")}
+                                    className="w-full p-6 rounded-3xl bg-brand-moss/5 backdrop-blur-xl border border-brand-moss/20 shadow-sm flex items-center justify-between hover:bg-brand-moss/10 transition-all group"
+                                >
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-10 h-10 rounded-xl bg-brand-moss/10 flex items-center justify-center text-brand-moss group-hover:bg-brand-moss group-hover:text-white transition-all">
+                                            <Zap className="w-5 h-5" />
+                                        </div>
+                                        <div className="text-left">
+                                            <p className="font-sans font-bold text-brand-moss text-lg uppercase tracking-tight">Admin Console</p>
+                                            <p className="font-sans text-brand-sage/60 text-sm lowercase leading-tight">Diagnostics and global metrics.</p>
+                                        </div>
                                     </div>
-                                    <div className="text-left">
-                                        <p className="font-sans font-bold text-brand-moss text-lg uppercase tracking-tight">Admin Console</p>
-                                        <p className="font-sans text-brand-sage/60 text-sm lowercase leading-tight">Diagnostics and global metrics.</p>
+                                    <ChevronRight className="w-5 h-5 text-brand-moss/40 group-hover:translate-x-1 transition-all" />
+                                </button>
+                                
+                                {/* Admin Pro Toggle */}
+                                <div className="w-full p-6 rounded-3xl bg-orange-500/5 backdrop-blur-xl border border-orange-500/20 shadow-sm flex items-center justify-between transition-all">
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center text-orange-500 transition-all">
+                                            <ShieldAlert className="w-5 h-5" />
+                                        </div>
+                                        <div className="text-left">
+                                            <p className="font-sans font-bold text-orange-500 text-lg uppercase tracking-tight">Force Pro Mode</p>
+                                            <p className="font-sans text-brand-sage/60 text-sm lowercase leading-tight">Override subscription status for testing.</p>
+                                        </div>
                                     </div>
+                                    <Switch
+                                        enabled={isPro}
+                                        onChange={toggleProTier}
+                                        color="bg-orange-500"
+                                    />
                                 </div>
-                                <ChevronRight className="w-5 h-5 text-brand-moss/40 group-hover:translate-x-1 transition-all" />
-                            </button>
+                            </div>
                         )}
 
                         {/* Delete Account */}
