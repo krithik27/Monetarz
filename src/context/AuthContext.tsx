@@ -48,20 +48,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         // Initial session check
         const init = async () => {
-
-            // NOTE: getSession() is used intentionally here for browser-side session hydration only.
-            // It reads from the local cache and does NOT re-validate against Supabase servers.
-            // ⚠️ Do NOT use getSession() for server-side auth decisions — use getUser() instead.
-            // All Server Actions and API routes in this codebase correctly use supabase.auth.getUser().
-            const { data: { session } } = await supabase.auth.getSession();
-            setSession(session);
-            setUser(session?.user ?? null);
-            setIsLoading(false);
-            
-            if (session?.user?.id) {
-                const { data } = await supabase.from('user_profiles').select('is_pro').eq('user_id', session.user.id).single();
-                setDbIsPro(!!data?.is_pro);
-            } else {
+            try {
+                // NOTE: getSession() is used intentionally here for browser-side session hydration only.
+                // It reads from the local cache and does NOT re-validate against Supabase servers.
+                // ⚠️ Do NOT use getSession() for server-side auth decisions — use getUser() instead.
+                // All Server Actions and API routes in this codebase correctly use supabase.auth.getUser().
+                const { data: { session }, error } = await supabase.auth.getSession();
+                if (error) throw error;
+                
+                setSession(session);
+                setUser(session?.user ?? null);
+                setIsLoading(false);
+                
+                if (session?.user?.id) {
+                    const { data } = await supabase.from('user_profiles').select('is_pro').eq('user_id', session.user.id).single();
+                    setDbIsPro(!!data?.is_pro);
+                } else {
+                    setDbIsPro(false);
+                }
+            } catch (err) {
+                console.error("Auth initialization failed:", err);
+                setIsLoading(false); // Ensure we don't get stuck in a loading state
+                setSession(null);
+                setUser(null);
                 setDbIsPro(false);
             }
         };

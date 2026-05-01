@@ -34,7 +34,7 @@ export default function HorizonLayout({ children }: HorizonLayoutProps) {
                     />
                 </div>
                 <h1 className="text-6xl font-sans font-semibold text-orange-400">Horizon is Pro-only</h1>
-                <p className="text-horizon-muted max-w-sm text-lg italic">
+                <p className="text-horizon-muted max-w-sm text-lg italic font-sans">
                     Upgrade to Monetarz Pro to unlock the full financial command centre.
                     <span className="text-orange-500 font-sans font-medium text-xl italic">(⚠️ This is still under development for free users)</span>
                 </p>
