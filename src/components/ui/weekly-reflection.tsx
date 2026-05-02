@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAnalytics } from "@/context/AnalyticsContext";
 import { TemporalEngine } from "@/lib/temporal";
@@ -11,21 +11,26 @@ export function WeeklyReflectionBanner() {
     const currentWeekId = TemporalEngine.getCurrentWeekId();
 
     // Persist dismissal state in localStorage
-    const [isDismissed, setIsDismissed] = useState(() => {
-        if (typeof window === 'undefined') return false;
+    const [isDismissed, setIsDismissed] = useState(false);
+    const [hydrated, setHydrated] = useState(false);
+
+    useEffect(() => {
         const dismissedWeek = localStorage.getItem('dismissed-weekly-reflection');
-        return dismissedWeek === currentWeekId;
-    });
+        if (dismissedWeek === currentWeekId) {
+            setIsDismissed(true);
+        }
+        setHydrated(true);
+    }, [currentWeekId]);
 
     const handleDismiss = () => {
         setIsDismissed(true);
         localStorage.setItem('dismissed-weekly-reflection', currentWeekId);
     };
-
+    
     // Find reflection for this week
     const reflection = reflections.find(r => r.weekId === currentWeekId);
 
-    if (!reflection || isDismissed) return null;
+    if (!hydrated || !reflection || isDismissed) return null;
 
     return (
         <AnimatePresence>

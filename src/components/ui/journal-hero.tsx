@@ -10,7 +10,7 @@
  * - Rotating micro-copy phrase (picked once per mount)
  */
 
-import { useMemo } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
@@ -53,21 +53,35 @@ export function JournalHero() {
     const { user } = useAuth();
     const { avatarUrl } = useAvatar();
 
-    const { greeting, timeEmoji, firstName, dateStr, microCopy } = useMemo(() => {
+    const [hydrated, setHydrated] = useState(false);
+    const [state, setState] = useState({
+        greeting: "",
+        timeEmoji: "",
+        firstName: "you",
+        dateStr: "",
+        microCopy: ""
+    });
+
+    useEffect(() => {
         const now = new Date();
         const hour = now.getHours();
         const meta = user?.user_metadata ?? {};
         const full = meta.full_name as string | undefined;
         const fname = full?.split(" ")[0] ?? "you";
 
-        return {
+        setState({
             greeting: getGreeting(hour),
             timeEmoji: getTimeEmoji(hour),
             firstName: fname,
             dateStr: formatDate(now),
             microCopy: MICRO_COPY[Math.floor(Math.random() * MICRO_COPY.length)],
-        };
+        });
+        setHydrated(true);
     }, [user]);
+
+    const { greeting, timeEmoji, firstName, dateStr, microCopy } = state;
+
+    if (!hydrated) return null;
 
     return (
         <motion.div

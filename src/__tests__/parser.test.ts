@@ -13,7 +13,7 @@ describe('Parser', () => {
   it('should parse complex entries with currency', () => {
     const result = parseSpend('uber ride $300');
     expect(result.amount).toBe(300);
-    expect(result.description).toBe('Uber ride $');
+    expect(result.description).toBe('Uber ride');
     expect(result.category).toBe('transport');
   });
 

@@ -19,11 +19,15 @@ function AppGate({ children }: { children: ReactNode }) {
     useEffect(() => {
         if (isLoading) return;
 
-        // Clean pathname to remove trailing slashes for robust matching
         const cleanPathname = pathname.replace(/\/$/, "") || "/";
         const publicRoutes = ["/sign-in", "/", "/privacy", "/terms", "/refund", "/pricing"];
+        
+        const isPublic = publicRoutes.includes(cleanPathname) || 
+                         cleanPathname.startsWith('/manifest') || 
+                         cleanPathname.startsWith('/sw.js') || 
+                         cleanPathname.startsWith('/images/');
 
-        if (!user && !publicRoutes.includes(cleanPathname)) {
+        if (!user && !isPublic) {
             router.push(`/sign-in?redirect=${encodeURIComponent(pathname)}`);
             return;
         }
@@ -40,7 +44,11 @@ function AppGate({ children }: { children: ReactNode }) {
 
     // Allow access to sign-in and root landing even if not logged in
     const cleanPathname = pathname.replace(/\/$/, "") || "/";
-    const isPublicRoute = ["/sign-in", "/", "/privacy", "/terms", "/refund", "/pricing"].includes(cleanPathname);
+    const publicRoutes = ["/sign-in", "/", "/privacy", "/terms", "/refund", "/pricing"];
+    const isPublicRoute = publicRoutes.includes(cleanPathname) || 
+                          cleanPathname.startsWith('/manifest') || 
+                          cleanPathname.startsWith('/sw.js') || 
+                          cleanPathname.startsWith('/images/');
     
     if (!user && !isPublicRoute) {
         return null; // Will redirect via useEffect
