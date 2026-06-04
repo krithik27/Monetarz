@@ -33,7 +33,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Defaults to true (the dev/admin always starts in Pro mode).
     const [proTierOverride, setProTierOverride] = useState<boolean>(true);
     // Track DB-backed Pro status securely
-    const [dbIsPro, setDbIsPro] = useState<boolean>(false);
+    const [dbIsPro, setDbIsPro] = useState<boolean>(() => {
+        if (typeof window !== 'undefined') {
+            return localStorage.getItem('monetarz_is_pro_cache') === 'true';
+        }
+        return false;
+    });
+
 
     // Auth Initialization
 
@@ -45,6 +51,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (storedOverride !== null) {
             setProTierOverride(storedOverride === 'true');
         }
+
+        // Initial session check
+        const fetchProStatus = async (userId: string) => {
+            try {
+                const { data, error } = await supabase
+                    .from('user_profiles')
+                    .select('is_pro')
+                    .eq('user_id', userId)
+                    .single();
+                
+                if (error) {
+                    if (error.code === 'PGRST116') {
+                        setDbIsPro(false);
+                        localStorage.setItem('monetarz_is_pro_cache', 'false');
+                    } else {
+                        console.warn("Failed to fetch Pro status, falling back to cache:", error.message);
+                    }
+                } else if (data) {
+                    const isPro = !!data.is_pro;
+                    setDbIsPro(isPro);
+                    localStorage.setItem('monetarz_is_pro_cache', String(isPro));
+                }
+            } catch (err) {
+                console.error("Error in fetchProStatus:", err);
+            }
+        };
 
         // Initial session check
         const init = async () => {
@@ -61,10 +93,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 setIsLoading(false);
                 
                 if (session?.user?.id) {
-                    const { data } = await supabase.from('user_profiles').select('is_pro').eq('user_id', session.user.id).single();
-                    setDbIsPro(!!data?.is_pro);
+                    await fetchProStatus(session.user.id);
                 } else {
                     setDbIsPro(false);
+                    localStorage.setItem('monetarz_is_pro_cache', 'false');
                 }
             } catch (err) {
                 console.error("Auth initialization failed:", err);
@@ -72,6 +104,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 setSession(null);
                 setUser(null);
                 setDbIsPro(false);
+                localStorage.setItem('monetarz_is_pro_cache', 'false');
             }
         };
         init();
@@ -83,10 +116,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setIsLoading(false);
 
             if (session?.user?.id) {
-                const { data } = await supabase.from('user_profiles').select('is_pro').eq('user_id', session.user.id).single();
-                setDbIsPro(!!data?.is_pro);
+                await fetchProStatus(session.user.id);
             } else {
                 setDbIsPro(false);
+                localStorage.setItem('monetarz_is_pro_cache', 'false');
             }
         });
 
